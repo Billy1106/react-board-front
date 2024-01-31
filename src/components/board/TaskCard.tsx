@@ -9,6 +9,8 @@ import {
   IconButton,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import type { Task } from ".";
 
 function TaskCard({ task }: { task: Task }) {
@@ -20,11 +22,16 @@ function TaskCard({ task }: { task: Task }) {
   );
 
   return (
-    <Box sx={{ marginBottom: 2, display: "flex", justifyContent: "center"}}>
+    <Box sx={{ marginBottom: 2, display: "flex", justifyContent: "center" }}>
       <Card sx={{ maxWidth: 340, boxShadow: 0, borderRadius: 2 }}>
-        <CardContent style={{paddingBottom: "0px"}}>
-          <Box sx={{ alignItems: "center", gap: "10px"}}>
-            <Chip label={task.tag} size="small" />
+        <CardContent style={{ paddingBottom: "0px" }}>
+          <Box sx={{ gap: "10px" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "space-between" }}>
+              <Chip label={task.tag} size="small" />
+              <IconButton size="small">
+                <MoreHorizIcon />
+              </IconButton>
+            </Box>
             <Typography
               gutterBottom
               variant="h6"
@@ -59,11 +66,33 @@ function TaskCard({ task }: { task: Task }) {
             >
               {task.assignee}
             </Typography>
+            <IconButton size="small">
+              <DateRangeIcon />
+            </IconButton>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#4a4a4a",
+                justifyContent: "center",
+                marginLeft: "0px",
+              }}
+            >
+              {dateFormatter(task.deadline)}
+            </Typography>
           </CardActions>
         </CardContent>
       </Card>
     </Box>
   );
+}
+
+function dateFormatter(date: string): string {
+  const d = new Date(date);
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) {
+    return "Today " + d.toLocaleTimeString().slice(0, 5);
+  }
+  return d.toDateString();
 }
 
 function interpolateColor(
