@@ -10,8 +10,11 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import DateRangeIcon from '@mui/icons-material/DateRange';
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { Task } from ".";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
 
 function TaskCard({ task }: { task: Task }) {
   const progress = calculateProgress(new Date(task.deadline), task.severity);
@@ -21,16 +24,54 @@ function TaskCard({ task }: { task: Task }) {
     progress
   );
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    setActivatorNodeRef,
+    isDragging,
+    transition,
+  } = useSortable({
+    id: task.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0 : 1,
+  };
+
   return (
-    <Box sx={{ marginBottom: 2, display: "flex", justifyContent: "center" }}>
-      <Card sx={{ maxWidth: 340, boxShadow: 0, borderRadius: 2 }}>
+    <Box
+      sx={{ marginBottom: 2, display: "flex", justifyContent: "center" }}
+      ref={setNodeRef}
+      style={style}
+    >
+      <Card
+        sx={{ maxWidth: 340, boxShadow: 0, borderRadius: 2 }}
+        id={task.id}
+        ref={setNodeRef}
+      >
         <CardContent style={{ paddingBottom: "0px" }}>
           <Box sx={{ gap: "10px" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "space-between" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                justifyContent: "space-between",
+              }}
+            >
               <Chip label={task.tag} size="small" />
-              <IconButton size="small">
-                <MoreHorizIcon />
-              </IconButton>
+              <Box
+                sx={{ cursor: isDragging ? "grabbing" : "grab" }}
+                ref={setActivatorNodeRef}
+                {...attributes}
+                {...listeners}
+              >
+                <DragHandleIcon />
+              </Box>
             </Box>
             <Typography
               gutterBottom
