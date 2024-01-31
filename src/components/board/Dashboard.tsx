@@ -30,6 +30,7 @@ function Dashboard() {
         "Users are unable to log in using their credentials. Needs urgent attention.",
       status: STATE.INPROGRESS,
       deadline: "2024-02-31:20:20:00",
+      startedAt: "2024-01-20:20:20:00",
       tag: "Login",
     },
     {
@@ -42,6 +43,7 @@ function Dashboard() {
         "The landing page needs to be updated with the new product information.",
       status: STATE.INPROGRESS,
       deadline: "2024-10-31:20:20:00",
+      startedAt: "2024-01-10:20:20:00",
       tag: "Landing Page",
     },
     {
@@ -54,6 +56,7 @@ function Dashboard() {
         "Optimize database queries to improve application performance.",
       status: STATE.DONE,
       deadline: "2024-01-30:20:20:00",
+      startedAt: "2023-12-30:20:20:00",
       tag: "Database",
     },
     {
@@ -66,6 +69,7 @@ function Dashboard() {
         "Implement the new communication feature as per the specifications.",
       status: STATE.STAY,
       deadline: "2024-12-31:20:20:00",
+      startedAt: "2024-01-20:20:20:00",
       tag: "Feature",
     },
   ]);
@@ -126,14 +130,6 @@ function Dashboard() {
 
   function findTaskById(taskId: string): Task {
     return tasks.find((task) => task.id === taskId) as Task;
-  }
-
-  function updateTaskStatus(taskId: string, newStatus: STATE) {
-    const task = tasks.find((task) => task.id === taskId);
-    if (task) {
-      task.status = newStatus;
-    }
-    setTasks([...tasks]);
   }
 
   return (

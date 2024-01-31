@@ -13,6 +13,7 @@ export interface Task {
   description: string;
   status: STATE;
   deadline: string;
+  startedAt: string;
   tag: string;
 }
 

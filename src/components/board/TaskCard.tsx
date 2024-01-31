@@ -9,21 +9,14 @@ import {
   IconButton,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Task } from ".";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 
 function TaskCard({ task }: { task: Task }) {
-  const progress = calculateProgress(new Date(task.deadline), task.severity);
-  const backgroundColor = interpolateColor(
-    [255, 255, 255],
-    [235, 245, 251],
-    progress
-  );
-
   const {
     attributes,
     listeners,
@@ -42,6 +35,20 @@ function TaskCard({ task }: { task: Task }) {
     opacity: isDragging ? 0 : 1,
   };
 
+  const calculateBorderCompletion = (deadline: string, startedDate: string) => {
+    const started = new Date(startedDate);
+    const dueDate = new Date(deadline);
+    const today = new Date();
+    const remainingTime = dueDate.getTime() - today.getTime();
+    const totalTime = dueDate.getTime() - started.getTime();
+    return Math.floor((1 - remainingTime / totalTime) * 100);
+  };
+
+  const borderCompletion = calculateBorderCompletion(
+    task.deadline,
+    task.startedAt
+  );
+
   return (
     <Box
       sx={{ marginBottom: 2, display: "flex", justifyContent: "center" }}
@@ -49,7 +56,11 @@ function TaskCard({ task }: { task: Task }) {
       style={style}
     >
       <Card
-        sx={{ maxWidth: 340, boxShadow: 0, borderRadius: 2 }}
+        sx={{
+          maxWidth: 340,
+          boxShadow: 0,
+          borderRadius: 2,
+        }}
         id={task.id}
         ref={setNodeRef}
       >
@@ -87,40 +98,60 @@ function TaskCard({ task }: { task: Task }) {
           <Typography variant="body2" sx={{ color: "#4a4a4a" }}>
             {task.description}
           </Typography>
-          <CardActions
+          <Box
             sx={{
               display: "flex",
-              justifyContent: "left",
+              justifyContent: "space-between",
               paddingLeft: "0px",
             }}
           >
-            <IconButton size="small">
-              <AccountCircleIcon />
-            </IconButton>
-            <Typography
-              variant="body2"
+            <CardActions
               sx={{
-                color: "#4a4a4a",
-                justifyContent: "center",
-                marginLeft: "0px",
+                padding: "0px",
               }}
             >
-              {task.assignee}
-            </Typography>
-            <IconButton size="small">
-              <DateRangeIcon />
-            </IconButton>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#4a4a4a",
-                justifyContent: "center",
-                marginLeft: "0px",
-              }}
-            >
-              {dateFormatter(task.deadline)}
-            </Typography>
-          </CardActions>
+              <IconButton
+                size="small"
+                sx={{
+                  padding: "0px",
+                }}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#4a4a4a",
+                  justifyContent: "center",
+                  marginLeft: "0px",
+                }}
+              >
+                {task.assignee}
+              </Typography>
+            </CardActions>
+            <CardActions>
+              <IconButton size="small">
+                {borderCompletion > 100 ? (
+                  <LocalFireDepartmentIcon sx={{ color: "red" }} />
+                ) : (
+                  <DateRangeIcon />
+                )}
+              </IconButton>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#4a4a4a",
+                  justifyContent: "center",
+                }}
+                style={{
+                  color: borderCompletion > 90 ? "red" : "black",
+                  marginLeft: "0px",
+                }}
+              >
+                {dateFormatter(task.deadline)}
+              </Typography>
+            </CardActions>
+          </Box>
         </CardContent>
       </Card>
     </Box>
@@ -134,34 +165,6 @@ function dateFormatter(date: string): string {
     return "Today " + d.toLocaleTimeString().slice(0, 5);
   }
   return d.toDateString();
-}
-
-function interpolateColor(
-  startColor: [number, number, number],
-  endColor: [number, number, number],
-  progress: number
-): string {
-  progress = Math.max(0, Math.min(1, progress));
-  const r = Math.round(
-    startColor[0] + (endColor[0] - startColor[0]) * progress
-  );
-  const g = Math.round(
-    startColor[1] + (endColor[1] - startColor[1]) * progress
-  );
-  const b = Math.round(
-    startColor[2] + (endColor[2] - startColor[2]) * progress
-  );
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-function calculateProgress(deadline: Date, severity: number): number {
-  const now = new Date();
-  const timeDiff = deadline.getTime() - now.getTime();
-  const normalizedSeverity = severity / 10;
-  const adjustedTimeDiff = timeDiff / normalizedSeverity;
-  let progress = 1 - adjustedTimeDiff / (24 * 60 * 60 * 1000);
-  progress = Math.max(0, Math.min(1, progress));
-  return progress;
 }
 
 export default TaskCard;

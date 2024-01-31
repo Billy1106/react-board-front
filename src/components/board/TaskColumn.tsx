@@ -1,6 +1,6 @@
 import TaskCard from "./TaskCard";
 import { Task } from ".";
-import { Box, Typography } from "@mui/material";
+import { Badge, Box, Typography } from "@mui/material";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -13,15 +13,20 @@ function TaskColumn({ tasks, title }: { tasks: Task[]; title: string }) {
 
   return (
     <Box>
-      <Typography
-        fontFamily="Inter"
-        fontWeight="600"
-        fontSize="20px"
-        marginTop="30px"
-        marginBottom="30px"
+      <Box
+        sx={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "30px",
+          marginBottom: "30px",
+        }}
       >
-        {title}
-      </Typography>
+        <Badge badgeContent={tasks.length} color="secondary">
+          <Typography fontFamily="Inter" fontWeight="600" fontSize="20px">
+            {title}
+          </Typography>
+        </Badge>
+      </Box>
       <Box>
         <SortableContext
           id={title}
